@@ -1,0 +1,21 @@
+
+global vec;
+
+probe vfs.read {
+
+    if (bytes_to_read >= 1024) {
+        filename = __file_filename(file);
+        vec[pid(), filename, dev, devname] += bytes_to_read;
+    }
+}
+
+
+probe timer.s(2)
+{
+    foreach ([p, f, d, dn] in vec) {
+        printf("vec[%d, %s, %d, %s] = %d\n", p, f, d, dn, vec[p, f, d, dn]);
+    }
+
+    delete vec
+}
+

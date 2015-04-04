@@ -1,0 +1,37 @@
+
+global vec;
+
+probe ioblock.request {
+    if (target() == pid()) {
+        vec[pid(), ino, rw] += size
+    }
+}
+
+/*
+probe vfs.read {
+
+    if (bytes_to_read >= 1024) {
+        filename = __file_filename(file);
+        vec[pid(), filename, dev, devname] += bytes_to_read;
+    }
+}
+
+
+probe timer.s(2)
+{
+    foreach ([p, f, d, dn] in vec) {
+        printf("vec[%d, %s, %d, %s] = %d\n", p, f, d, dn, vec[p, f, d, dn]);
+    }
+
+    delete vec
+}
+*/
+
+probe timer.s(2)
+{
+    foreach ([p, i, t] in vec) {
+        printf("vec[%d, %d, %d] = %d\n", p, i, t, vec[p, i, t]);
+    }
+
+    delete vec
+}
