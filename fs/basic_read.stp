@@ -3,13 +3,17 @@ global vec;
 
 probe vfs.read {
 
-    if (bytes_to_read >= 1024) {
+//    if (bytes_to_read >= 1024) {
+    if (target() == pid()) {
         filename = __file_filename(file);
         vec[pid(), filename, dev, devname] += bytes_to_read;
     }
 }
 
+probe vfs.read.return {
+}
 
+/*
 probe timer.s(2)
 {
     foreach ([p, f, d, dn] in vec) {
@@ -18,4 +22,4 @@ probe timer.s(2)
 
     delete vec
 }
-
+*/

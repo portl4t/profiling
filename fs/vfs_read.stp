@@ -1,0 +1,27 @@
+
+global vec;
+
+probe vfs.read {
+    if (dev == 265289728) {
+        filename = __file_filename(file);
+        tm = gettimeofday_us();
+        vec[pid(), filename, dev, devname, pos] = tm;
+    }
+}
+
+probe vfs.read.return {
+
+    if (dev == 265289728) {
+        filename = __file_filename(file);
+        st = vec[pid(), filename, dev, devname, pos];
+
+        if (st > 0) {
+            ed = gettimeofday_us();
+            diff = ed - st;
+
+            if (diff >= 1000) {
+                printf("vec[%d, %s, %d, %s, %d] = %d\n", pid(), filename, dev, devname, pos, diff);
+            }
+        }
+    }
+}
